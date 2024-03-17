@@ -1,2 +1,4 @@
 # easy-deploy
-easy tool to set up ci/cd in a single server with docker
+Easy tool to set up ci/cd on a server with docker
+
+
