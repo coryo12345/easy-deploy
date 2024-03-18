@@ -8,6 +8,7 @@ import (
 )
 
 type ConfigRepository interface {
+	GetAllEntries() []ConfigEntry
 	FindEntryById(id string) (ConfigEntry, error)
 }
 
@@ -39,6 +40,10 @@ func New(configFile string) (ConfigRepository, error) {
 	}
 
 	return c, nil
+}
+
+func (c config) GetAllEntries() []ConfigEntry {
+	return c.entries
 }
 
 func (c config) FindEntryById(id string) (ConfigEntry, error) {

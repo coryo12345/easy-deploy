@@ -10,6 +10,7 @@ func (e *echoServer) RegisterServerGlobalMiddleware(env string) {
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Logger())
 
+	// idk why this generates random bytestrings
 	// if !strings.Contains(strings.ToLower(env), "prod") {
 	// 	e.Use(echoprometheus.NewMiddleware("myapp"))
 	// 	e.GET("/metrics", echoprometheus.NewHandler())

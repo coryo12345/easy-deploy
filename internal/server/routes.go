@@ -1,5 +1,15 @@
 package server
 
-func (e *echoServer) RegisterServerRoutes() {
+import (
+	"net/http"
 
+	"github.com/labstack/echo/v4"
+)
+
+func (e *echoServer) RegisterServerRoutes() {
+	e.GET("/", func(c echo.Context) error {
+		configs := e.configRepo.GetAllEntries()
+		c.JSON(http.StatusOK, configs)
+		return nil
+	})
 }
