@@ -8,12 +8,17 @@ import (
 )
 
 type ConfigRepository interface {
-	GetAllEntries() []ConfigEntry
+	GetAllServices() []ConfigEntry
 	FindEntryById(id string) (ConfigEntry, error)
 }
 
-type config struct {
-	entries []ConfigEntry
+type configRepo struct {
+	data ConfigData
+}
+
+type ConfigData struct {
+	Init     string        `json:"init"`
+	Services []ConfigEntry `json:"services"`
 }
 
 func New(configFile string) (ConfigRepository, error) {
@@ -29,25 +34,25 @@ func New(configFile string) (ConfigRepository, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to read file %s", configFile)
 	}
-	var entries []ConfigEntry
-	err = json.Unmarshal(data, &entries)
+	var configData ConfigData
+	err = json.Unmarshal(data, &configData)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse file %s, it may not be valid JSON", configFile)
 	}
 
-	c := config{
-		entries: entries,
+	c := configRepo{
+		data: configData,
 	}
 
 	return c, nil
 }
 
-func (c config) GetAllEntries() []ConfigEntry {
-	return c.entries
+func (c configRepo) GetAllServices() []ConfigEntry {
+	return c.data.Services
 }
 
-func (c config) FindEntryById(id string) (ConfigEntry, error) {
-	for _, entry := range c.entries {
+func (c configRepo) FindEntryById(id string) (ConfigEntry, error) {
+	for _, entry := range c.data.Services {
 		if entry.Id == id {
 			return entry, nil
 		}

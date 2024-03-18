@@ -1,8 +1,11 @@
-[
-    {
-        "id": "my-website",
-        "repo": "https://github.com/coryo12345/easy-deploy",
-        "container_name": "mywebsite",
-        "container_options": "-p 8080:8080"
-    }
-]
+{
+    "init": "docker network create mynetwork",
+    "services": [
+        {
+            "id": "my-website",
+            "repo": "https://github.com/coryo12345/easy-deploy",
+            "container_name": "mywebsite",
+            "container_options": "-p 8080:8080 --network mynetwork"
+        }
+    ]
+}

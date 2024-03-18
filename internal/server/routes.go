@@ -8,7 +8,7 @@ import (
 
 func (e *echoServer) RegisterServerRoutes() {
 	e.GET("/", func(c echo.Context) error {
-		configs := e.configRepo.GetAllEntries()
+		configs := e.configRepo.GetAllServices()
 		c.JSON(http.StatusOK, configs)
 		return nil
 	})
