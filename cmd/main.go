@@ -28,6 +28,9 @@ func main() {
 		log.Panicf("%s", err.Error())
 	}
 
+	// TODO need to create package to manage docker commands
+	// TODO need to run init command
+
 	// start server
 	webServer := server.New(configRepo)
 	webServer.RegisterServerGlobalMiddleware(envVars.env)
