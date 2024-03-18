@@ -5,4 +5,6 @@ type ConfigEntry struct {
 	GitRepository    string `json:"repo"`
 	ContainerName    string `json:"container_name"`
 	ContainerOptions string `json:"container_options"`
+	ImageName        string `json:"image_name"`
+	Dockerfile       string `json:"dockerfile_path"`
 }
