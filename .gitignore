@@ -23,3 +23,11 @@ go.work
 .env
 tmp/
 main
+
+# Node
+node_modules/
+
+# built files
+web/static/built-styles.css
+
+.DS_Store

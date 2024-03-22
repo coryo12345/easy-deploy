@@ -1,19 +1,28 @@
 all: build
 
-build:
+build: buildWeb
 	@echo "Building..."
-	@go build -o main cmd/main.go
+	go build -o main cmd/main.go
 
-run:
-	@go run cmd/main.go
+run: buildWeb
+	go run cmd/main.go
+
+buildWeb:
+	npm run build:css
+	templ generate
 
 test:
 	@echo "Testing..."
-	@go test ./tests -v
+	go test ./tests -v
+
+intall:
+	go install github.com/a-h/templ/cmd/templ@latest
+	npm install
+	cp ./node_modules/htmx.org/dist/htmx.min.js ./cmd/web/static/htmx.min.js
 
 clean:
 	@echo "Cleaning..."
-	@rm -f main
+	rm -f main
 
 watch:
 	@if command -v air > /dev/null; then \
@@ -31,4 +40,4 @@ watch:
 		fi; \
 	fi
 
-.PHONY: all build run test clean watch
+.PHONY: all build run test clean watch install

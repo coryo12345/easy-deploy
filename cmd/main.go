@@ -14,6 +14,7 @@ import (
 
 type environmentVariables struct {
 	configFile string
+	host       string
 	port       int
 	env        string
 }
@@ -35,7 +36,7 @@ func main() {
 	webServer := server.New(configRepo)
 	webServer.RegisterServerGlobalMiddleware(envVars.env)
 	webServer.RegisterServerRoutes()
-	webServer.StartServer(fmt.Sprintf(":%d", envVars.port))
+	webServer.StartServer(fmt.Sprintf("%s:%d", envVars.host, envVars.port))
 }
 
 func readEnvVars() environmentVariables {
@@ -55,8 +56,14 @@ func readEnvVars() environmentVariables {
 		env = "prod"
 	}
 
+	host := ""
+	if env == "local" {
+		host = "localhost"
+	}
+
 	return environmentVariables{
 		configFile,
+		host,
 		port,
 		env,
 	}
