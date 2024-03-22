@@ -8,9 +8,9 @@ templ MonitorPage() {
             <p class="text-red-500">homepage</p>
             @components.Button(templ.Attributes{
                 "class": "bg-slate-700 text-white",
-                "@click": "open = true",
+                "hx-post": "/logout",
             }) {
-                Click me!
+                Logout
             }
         </main>
     }

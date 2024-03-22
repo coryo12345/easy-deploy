@@ -41,7 +41,7 @@ func MonitorPage() templ.Component {
 					templ_7745c5c3_Buffer = templ.GetBuffer()
 					defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Click me!")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Logout")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -51,8 +51,8 @@ func MonitorPage() templ.Component {
 				return templ_7745c5c3_Err
 			})
 			templ_7745c5c3_Err = components.Button(templ.Attributes{
-				"class":  "bg-slate-700 text-white",
-				"@click": "open = true",
+				"class":   "bg-slate-700 text-white",
+				"hx-post": "/logout",
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

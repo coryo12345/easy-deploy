@@ -14,8 +14,8 @@ Only consider using this tool if:
 You will still need to configure any reverse proxies yourself to point traffic to each container (if needed)
 
 ## TODO
-* [ ] make web interface to view processes & trigger redeploys
-* [ ] need to wrap interface with auth protection. (password from env variable?)
+* [ ] generate JWT on login if password is correct & set in cookie
+* [ ] verify JWT in auth middleware
 * [ ] need to make `start.sh` file that runs easy-deploy container (must mount docker socket & config file)
 * [ ] need to run init command on startup (from config)
 * [ ] research github webhooks

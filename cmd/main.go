@@ -7,16 +7,18 @@ import (
 	"slices"
 	"strconv"
 
+	"github.com/coryo12345/easy-deploy/internal/auth"
 	"github.com/coryo12345/easy-deploy/internal/config"
 	"github.com/coryo12345/easy-deploy/internal/server"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 type environmentVariables struct {
-	configFile string
-	host       string
-	port       int
-	env        string
+	configFile  string
+	host        string
+	port        int
+	env         string
+	webPassword string
 }
 
 func main() {
@@ -29,12 +31,13 @@ func main() {
 		log.Panicf("%s", err.Error())
 	}
 
-	// TODO need to create package to manage docker commands
+	authRepo := auth.New(envVars.webPassword)
+
 	// TODO need to run init command
 
 	// start server
-	webServer := server.New(configRepo)
-	webServer.RegisterServerGlobalMiddleware(envVars.env)
+	webServer := server.New(configRepo, authRepo)
+	webServer.RegisterServerGlobalMiddleware()
 	webServer.RegisterServerRoutes()
 	webServer.StartServer(fmt.Sprintf("%s:%d", envVars.host, envVars.port))
 }
@@ -61,10 +64,16 @@ func readEnvVars() environmentVariables {
 		host = "localhost"
 	}
 
+	password := os.Getenv("DEPLOY_WEB_PASSWORD")
+	if password == "" {
+		log.Panicf("DEPLOY_WEB_PASSWORD must be defined!")
+	}
+
 	return environmentVariables{
-		configFile,
-		host,
-		port,
-		env,
+		configFile:  configFile,
+		host:        host,
+		port:        port,
+		env:         env,
+		webPassword: password,
 	}
 }

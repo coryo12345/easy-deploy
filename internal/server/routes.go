@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/a-h/templ"
 	"github.com/coryo12345/easy-deploy/web"
@@ -9,10 +10,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func adaptor(component templ.Component) func(e echo.Context) error {
-	return func(e echo.Context) error {
-		e.Response().Header().Set("content-type", "text/html; charset=utf-8")
-		return component.Render(e.Request().Context(), e.Response().Writer)
+func adaptor(component templ.Component) func(c echo.Context) error {
+	return func(c echo.Context) error {
+		c.Response().Header().Set("content-type", "text/html; charset=utf-8")
+		return component.Render(c.Request().Context(), c.Response().Writer)
 	}
 }
 
@@ -23,13 +24,36 @@ func (s *echoServer) RegisterServerRoutes() {
 
 	s.GET("/", adaptor(web.LoginPage()))
 	s.POST("/login", s.LoginHandler)
+	s.POST("/logout", s.LogoutHandler)
 
 	authGroup := s.Group("/monitor")
 	authGroup.Use(s.RequireAuth)
+	authGroup.GET("", adaptor(web.MonitorPage()))
 	authGroup.GET("/", adaptor(web.MonitorPage()))
 
 }
 
-func (s *echoServer) LoginHandler(e echo.Context) error {
+func (s *echoServer) LoginHandler(c echo.Context) error {
+	c.SetCookie(&http.Cookie{
+		Name:     X_AUTH_COOKIE,
+		Value:    "password",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteDefaultMode,
+	})
+	c.Response().Header().Set("HX-Redirect", "/monitor")
+	return nil
+}
+
+func (s *echoServer) LogoutHandler(c echo.Context) error {
+	c.SetCookie(&http.Cookie{
+		Name:     X_AUTH_COOKIE,
+		Value:    "",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteDefaultMode,
+		Expires:  time.Now().AddDate(-1, 0, 0),
+	})
+	c.Response().Header().Set("HX-Redirect", "/")
 	return nil
 }

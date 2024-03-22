@@ -1,14 +1,16 @@
 package server
 
 import (
-	"log"
+	"net/http"
 	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func (s *echoServer) RegisterServerGlobalMiddleware(env string) {
+const X_AUTH_COOKIE = "x-easy-deploy-auth"
+
+func (s *echoServer) RegisterServerGlobalMiddleware() {
 	s.Use(middleware.Recover())
 	s.Use(middleware.Secure())
 	s.Use(middleware.Gzip())
@@ -29,9 +31,12 @@ func (s *echoServer) RegisterServerGlobalMiddleware(env string) {
 
 }
 
-func (e *echoServer) RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
+func (s *echoServer) RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Println("auth middleware ran")
+		cookie, err := c.Cookie(X_AUTH_COOKIE)
+		if err != nil || !s.authRepo.Authenticate(cookie.Value) {
+			return c.Redirect(http.StatusFound, "/")
+		}
 		return next(c)
 	}
 }
