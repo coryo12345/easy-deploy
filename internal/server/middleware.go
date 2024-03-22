@@ -8,11 +8,11 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func (e *echoServer) RegisterServerGlobalMiddleware(env string) {
-	e.Use(middleware.Recover())
-	e.Use(middleware.Secure())
-	e.Use(middleware.Gzip())
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+func (s *echoServer) RegisterServerGlobalMiddleware(env string) {
+	s.Use(middleware.Recover())
+	s.Use(middleware.Secure())
+	s.Use(middleware.Gzip())
+	s.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Skipper: func(c echo.Context) bool {
 			path := c.Request().URL.Path
 			staticIndex := strings.Index(path, "/static/")

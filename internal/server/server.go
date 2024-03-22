@@ -25,6 +25,6 @@ func New(configRepo config.ConfigRepository) Server {
 	}
 }
 
-func (e *echoServer) StartServer(host string) {
-	e.Logger.Fatal(e.Start(host))
+func (s *echoServer) StartServer(host string) {
+	s.Logger.Fatal(s.Start(host))
 }

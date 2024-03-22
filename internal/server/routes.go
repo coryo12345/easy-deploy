@@ -16,15 +16,20 @@ func adaptor(component templ.Component) func(e echo.Context) error {
 	}
 }
 
-func (e *echoServer) RegisterServerRoutes() {
-	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+func (s *echoServer) RegisterServerRoutes() {
+	s.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Filesystem: http.FS(web.StaticFiles),
 	}))
 
-	e.GET("/", adaptor(web.LoginPage()))
+	s.GET("/", adaptor(web.LoginPage()))
+	s.POST("/login", s.LoginHandler)
 
-	authGroup := e.Group("/monitor")
-	authGroup.Use(e.RequireAuth)
+	authGroup := s.Group("/monitor")
+	authGroup.Use(s.RequireAuth)
 	authGroup.GET("/", adaptor(web.MonitorPage()))
 
+}
+
+func (s *echoServer) LoginHandler(e echo.Context) error {
+	return nil
 }
