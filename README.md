@@ -14,8 +14,10 @@ Only consider using this tool if:
 You will still need to configure any reverse proxies yourself to point traffic to each container (if needed)
 
 ## TODO
+* [ ] make web interface to view processes & trigger redeploys
+* [ ] need to wrap interface with auth protection. (password from env variable?)
 * [ ] need to make `start.sh` file that runs easy-deploy container (must mount docker socket & config file)
-* [ ] need to run init command on startup
+* [ ] need to run init command on startup (from config)
 * [ ] research github webhooks
 * [ ] create function to delete container
 * [ ] create function to delete image
