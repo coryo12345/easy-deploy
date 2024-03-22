@@ -1,0 +1,16 @@
+package components
+
+type CardProps struct {
+	Title       string
+	Description string
+}
+
+templ Card(props CardProps, attrs templ.Attributes) {
+	<section class={ mergeClass("border shadow rounded p-4 min-w-[350px] w-min", attrs) } { attrs... }>
+		<div class="text-left mb-2">
+			<h3 class="text-xl font-semibold">{ props.Title }</h3>
+			<p class="text-gray-500">{ props.Description }</p>
+		</div>
+		{ children... }
+	</section>
+}

@@ -11,6 +11,7 @@ import (
 
 func adaptor(component templ.Component) func(e echo.Context) error {
 	return func(e echo.Context) error {
+		e.Response().Header().Set("content-type", "text/html; charset=utf-8")
 		return component.Render(e.Request().Context(), e.Response().Writer)
 	}
 }
@@ -20,10 +21,10 @@ func (e *echoServer) RegisterServerRoutes() {
 		Filesystem: http.FS(web.StaticFiles),
 	}))
 
-	e.GET("/", adaptor(web.Base()))
+	e.GET("/", adaptor(web.LoginPage()))
 
 	authGroup := e.Group("/monitor")
 	authGroup.Use(e.RequireAuth)
-	authGroup.GET("/", adaptor(web.HomePage()))
+	authGroup.GET("/", adaptor(web.MonitorPage()))
 
 }

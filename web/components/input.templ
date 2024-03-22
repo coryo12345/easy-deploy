@@ -1,0 +1,11 @@
+package components
+
+templ Button(attrs templ.Attributes) {
+	<button class={ mergeClass("border shadow px-2 py-1 rounded font-semibold", attrs) } { attrs... }>
+		{ children... }
+	</button>
+}
+
+templ Input(attrs templ.Attributes) {
+	<input class={ mergeClass("border shadow px-2 py-1 rounded block", attrs) } { attrs... } />
+}

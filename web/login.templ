@@ -1,0 +1,22 @@
+package web
+
+import "github.com/coryo12345/easy-deploy/web/components"
+
+templ LoginPage() {
+	@Base() {
+		<main class="p-4 min-h-screen flex flex-col justify-center">
+			@components.Card(components.CardProps{Title: "Sign In", Description: "You must sign in to access this instance"},
+				templ.Attributes{"class": "m-auto"}) {
+				<form hx-post="/login">
+					<label for="pw">Password</label>
+					@components.Input(templ.Attributes{"placeholder": "••••••••••••", "type": "password", "name": "password", "id": "pw"})
+					<div class="mt-4">
+						@components.Button(templ.Attributes{"class": "bg-blue-500 text-white", "type": "submit"}) {
+							Login
+						}
+					</div>
+				</form>
+			}
+		</main>
+	}
+}

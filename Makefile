@@ -15,10 +15,11 @@ test:
 	@echo "Testing..."
 	go test ./tests -v
 
-intall:
+install:
 	go install github.com/a-h/templ/cmd/templ@latest
 	npm install
-	cp ./node_modules/htmx.org/dist/htmx.min.js ./cmd/web/static/htmx.min.js
+	cp ./node_modules/htmx.org/dist/htmx.min.js ./web/static/htmx.min.js
+	cp ./node_modules/alpinejs/dist/cdn.min.js ./web/static/alpine.cdn.min.js
 
 clean:
 	@echo "Cleaning..."
