@@ -30,8 +30,8 @@ func (s *echoServer) RegisterServerRoutes() {
 
 	authGroup := s.Group("/monitor")
 	authGroup.Use(s.RequireAuth)
-	authGroup.GET("", adaptor(web.MonitorPage(make([]docker.DockerStatus, 0))))
-	authGroup.GET("/", adaptor(web.MonitorPage(make([]docker.DockerStatus, 0))))
+	authGroup.GET("", s.MonitorPageHandler)
+	authGroup.GET("/", s.MonitorPageHandler)
 
 }
 
@@ -71,4 +71,12 @@ func (s *echoServer) LogoutHandler(c echo.Context) error {
 	})
 	c.Response().Header().Set("HX-Redirect", "/")
 	return nil
+}
+
+func (s *echoServer) MonitorPageHandler(c echo.Context) error {
+	statuses, err := docker.GetStatuses(s.configRepo.GetAllServices())
+	if err != nil {
+		return adaptor(web.ErrorPage("Something went wrong..."))(c)
+	}
+	return adaptor(web.MonitorPage(statuses))(c)
 }

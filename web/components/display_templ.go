@@ -28,7 +28,7 @@ func Card(props CardProps, attrs templ.Attributes) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{mergeClass("border shadow rounded p-4 min-w-[350px] w-min", attrs)}
+		var templ_7745c5c3_Var2 = []any{mergeClass("border shadow rounded p-4 min-w-[350px] w-min bg-white text-left", attrs)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

@@ -3,6 +3,7 @@ package web
 import (
 	"github.com/coryo12345/easy-deploy/web/components"
 	"github.com/coryo12345/easy-deploy/internal/docker"
+	"fmt"
 )
 
 templ MonitorPage(items []docker.DockerStatus) {
@@ -10,20 +11,37 @@ templ MonitorPage(items []docker.DockerStatus) {
 		<header class="border-b w-screen h-12 px-2 fixed top-0 left-0 shadow bg-white flex items-center justify-between">
 			<h1 class="text-lg font-semibold"><a href="/monitor">EasyDeploy</a></h1>
 			@components.Button(templ.Attributes{
-				"class":   "bg-slate-700 text-white",
+				"class":   "bg-blue-500 text-white",
 				"hx-post": "/logout",
 			}) {
 				Logout
 			}
 		</header>
-		<main class="text-center mt-12 pt-4">
-			<p class="text-red-500">homepage</p>
+		<main class="text-center mt-12 pt-4 px-8">
+			@MonitorItems(items)
 		</main>
 	}
 }
 
 templ MonitorItems(items []docker.DockerStatus) {
+	<ul role="list">
+		for _, item := range items {
+			<li>
+				@MonitorItem(item)
+			</li>
+		}
+	</ul>
 }
 
 templ MonitorItem(item docker.DockerStatus) {
+	@components.Card(components.CardProps{
+		Title:       item.ContainerName,
+		Description: fmt.Sprintf("Using image %s", item.ImageName),
+	}, templ.Attributes{
+		"class": "!min-w-[100%]",
+	}) {
+		<p>{ item.ContainerName }</p>
+		<p>{ item.ImageName }</p>
+		<p>{ item.Status }</p>
+	}
 }

@@ -32,7 +32,7 @@ func main() {
 	}
 
 	authRepo := auth.NewAuthRepository(envVars.webPassword)
-	jwtBuilder := auth.NewJwtBuilder()
+	jwtBuilder := auth.NewJwtBuilder(envVars.env)
 
 	// TODO need to run init command from config
 

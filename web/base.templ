@@ -11,9 +11,17 @@ templ Base() {
             <script src="/static/htmx.min.js"></script>
             <script src="/static/alpine.cdn.min.js"></script>
         </head>
-        <body>
+        <body class="bg-blue-50">
             { children... }
             <div id="global-error" class="fixed bottom-2 right-2"></div>
         </body>
     </html>
+}
+
+templ ErrorPage(msg string) {
+    @Base() {
+        <main class="text-center">
+            <p class="text-lg">{ msg }</p>
+        </main>
+    }
 }

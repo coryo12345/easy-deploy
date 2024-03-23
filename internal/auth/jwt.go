@@ -18,8 +18,11 @@ type jwtBuilder struct {
 	jwtKey []byte
 }
 
-func NewJwtBuilder() JwtBuilder {
+func NewJwtBuilder(env string) JwtBuilder {
 	key := randomKey()
+	if env == "local" {
+		key = []byte("localdev-secret-key")
+	}
 	return &jwtBuilder{
 		jwtKey: key,
 	}

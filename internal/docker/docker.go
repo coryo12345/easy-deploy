@@ -19,12 +19,12 @@ func Health() (bool, error) {
 
 func GetStatuses(configEntries []config.ConfigEntry) ([]DockerStatus, error) {
 	statuses := make([]DockerStatus, len(configEntries))
-	for _, entry := range configEntries {
+	for i, entry := range configEntries {
 		status, err := GetStatus(entry)
 		if err != nil {
 			return nil, err
 		}
-		statuses = append(statuses, status)
+		statuses[i] = status
 	}
 	return statuses, nil
 }
