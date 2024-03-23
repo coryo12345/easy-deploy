@@ -22,19 +22,13 @@ func (s *echoServer) RegisterServerGlobalMiddleware() {
 		},
 		Format: "{\"method\":\"${method}\", \"uri\":\"${uri}\", \"status\":\"${status}\"}\n",
 	}))
-
-	// idk why this generates random bytestrings
-	// if !strings.Contains(strings.ToLower(env), "prod") {
-	// 	e.Use(echoprometheus.NewMiddleware("myapp"))
-	// 	e.GET("/metrics", echoprometheus.NewHandler())
-	// }
-
 }
 
 func (s *echoServer) RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		cookie, err := c.Cookie(X_AUTH_COOKIE)
-		if err != nil || !s.authRepo.Authenticate(cookie.Value) {
+		_, err := c.Cookie(X_AUTH_COOKIE)
+		// TODO need to verify jwt here
+		if err != nil {
 			return c.Redirect(http.StatusFound, "/")
 		}
 		return next(c)

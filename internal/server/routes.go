@@ -6,6 +6,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/coryo12345/easy-deploy/web"
+	"github.com/coryo12345/easy-deploy/web/components"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -34,15 +35,23 @@ func (s *echoServer) RegisterServerRoutes() {
 }
 
 func (s *echoServer) LoginHandler(c echo.Context) error {
-	c.SetCookie(&http.Cookie{
-		Name:     X_AUTH_COOKIE,
-		Value:    "password",
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteDefaultMode,
-	})
-	c.Response().Header().Set("HX-Redirect", "/monitor")
-	return nil
+	password := c.FormValue("password")
+	valid := s.authRepo.Authenticate(password)
+
+	if valid {
+		c.SetCookie(&http.Cookie{
+			Name:     X_AUTH_COOKIE,
+			Value:    "password",
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteDefaultMode,
+		})
+		c.Response().Header().Set("HX-Redirect", "/monitor")
+		return nil
+	} else {
+		c.Response().Header().Set("HX-Retarget", "#global-error")
+		return adaptor(components.ErrorMessage("Unable to authenticate. Check you have the correct password."))(c)
+	}
 }
 
 func (s *echoServer) LogoutHandler(c echo.Context) error {
