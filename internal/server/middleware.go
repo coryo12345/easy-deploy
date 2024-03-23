@@ -26,11 +26,16 @@ func (s *echoServer) RegisterServerGlobalMiddleware() {
 
 func (s *echoServer) RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		_, err := c.Cookie(X_AUTH_COOKIE)
-		// TODO need to verify jwt here
+		cookie, err := c.Cookie(X_AUTH_COOKIE)
 		if err != nil {
 			return c.Redirect(http.StatusFound, "/")
 		}
-		return next(c)
+		token := cookie.Value
+		valid := s.jwtBuilder.VerifyToken(token)
+		if valid {
+			return next(c)
+		} else {
+			return c.Redirect(http.StatusFound, "/")
+		}
 	}
 }

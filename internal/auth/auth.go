@@ -8,7 +8,7 @@ type auth struct {
 	password string
 }
 
-func New(password string) AuthRepository {
+func NewAuthRepository(password string) AuthRepository {
 	return &auth{
 		password: password,
 	}

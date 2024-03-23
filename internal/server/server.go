@@ -16,15 +16,17 @@ type echoServer struct {
 	*echo.Echo
 	configRepo config.ConfigRepository
 	authRepo   auth.AuthRepository
+	jwtBuilder auth.JwtBuilder
 }
 
-func New(configRepo config.ConfigRepository, authRepo auth.AuthRepository) Server {
+func New(configRepo config.ConfigRepository, authRepo auth.AuthRepository, jwtBuilder auth.JwtBuilder) Server {
 	e := echo.New()
 
 	return &echoServer{
 		Echo:       e,
 		configRepo: configRepo,
 		authRepo:   authRepo,
+		jwtBuilder: jwtBuilder,
 	}
 }
 

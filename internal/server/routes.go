@@ -39,9 +39,14 @@ func (s *echoServer) LoginHandler(c echo.Context) error {
 	valid := s.authRepo.Authenticate(password)
 
 	if valid {
+		token, err := s.jwtBuilder.NewToken()
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "something went wrong")
+		}
+
 		c.SetCookie(&http.Cookie{
 			Name:     X_AUTH_COOKIE,
-			Value:    "password",
+			Value:    token,
 			HttpOnly: true,
 			Secure:   true,
 			SameSite: http.SameSiteDefaultMode,

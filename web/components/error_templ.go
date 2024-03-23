@@ -23,14 +23,14 @@ func ErrorMessage(msg string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"bg-red-400 border-2 border-red-600 rounded p-2 flex items-center justify-start gap-2\"><span class=\"text-4xl text-white font-bold\">&#9888;</span><p class=\"text-white font-semibold\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"bg-red-400 border-2 border-red-600 rounded p-2 flex items-center justify-start gap-1\"><span class=\"text-4xl text-white font-semibold\">&#9888;</span><p class=\"text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(msg)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/error.templ`, Line: 6, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/components/error.templ`, Line: 6, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

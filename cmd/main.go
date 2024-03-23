@@ -31,12 +31,13 @@ func main() {
 		log.Panicf("%s", err.Error())
 	}
 
-	authRepo := auth.New(envVars.webPassword)
+	authRepo := auth.NewAuthRepository(envVars.webPassword)
+	jwtBuilder := auth.NewJwtBuilder()
 
-	// TODO need to run init command
+	// TODO need to run init command from config
 
 	// start server
-	webServer := server.New(configRepo, authRepo)
+	webServer := server.New(configRepo, authRepo, jwtBuilder)
 	webServer.RegisterServerGlobalMiddleware()
 	webServer.RegisterServerRoutes()
 	webServer.StartServer(fmt.Sprintf("%s:%d", envVars.host, envVars.port))
