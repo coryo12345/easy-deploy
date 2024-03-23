@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/a-h/templ"
+	"github.com/coryo12345/easy-deploy/internal/docker"
 	"github.com/coryo12345/easy-deploy/web"
 	"github.com/coryo12345/easy-deploy/web/components"
 	"github.com/labstack/echo/v4"
@@ -29,8 +30,8 @@ func (s *echoServer) RegisterServerRoutes() {
 
 	authGroup := s.Group("/monitor")
 	authGroup.Use(s.RequireAuth)
-	authGroup.GET("", adaptor(web.MonitorPage()))
-	authGroup.GET("/", adaptor(web.MonitorPage()))
+	authGroup.GET("", adaptor(web.MonitorPage(make([]docker.DockerStatus, 0))))
+	authGroup.GET("/", adaptor(web.MonitorPage(make([]docker.DockerStatus, 0))))
 
 }
 

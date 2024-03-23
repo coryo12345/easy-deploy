@@ -1,17 +1,29 @@
 package web
 
-import "github.com/coryo12345/easy-deploy/web/components"
+import (
+	"github.com/coryo12345/easy-deploy/web/components"
+	"github.com/coryo12345/easy-deploy/internal/docker"
+)
 
-templ MonitorPage() {
-    @Base() {
-        <main class="text-center">
-            <p class="text-red-500">homepage</p>
-            @components.Button(templ.Attributes{
-                "class": "bg-slate-700 text-white",
-                "hx-post": "/logout",
-            }) {
-                Logout
-            }
-        </main>
-    }
+templ MonitorPage(items []docker.DockerStatus) {
+	@Base() {
+		<header class="border-b w-screen h-12 px-2 fixed top-0 left-0 shadow bg-white flex items-center justify-between">
+			<h1 class="text-lg font-semibold"><a href="/monitor">EasyDeploy</a></h1>
+			@components.Button(templ.Attributes{
+				"class":   "bg-slate-700 text-white",
+				"hx-post": "/logout",
+			}) {
+				Logout
+			}
+		</header>
+		<main class="text-center mt-12 pt-4">
+			<p class="text-red-500">homepage</p>
+		</main>
+	}
+}
+
+templ MonitorItems(items []docker.DockerStatus) {
+}
+
+templ MonitorItem(item docker.DockerStatus) {
 }

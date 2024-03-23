@@ -1,10 +1,40 @@
 package docker
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/coryo12345/easy-deploy/internal/config"
+)
+
+type DockerStatus struct {
+	ContainerName string `json:"container_name"`
+	ImageName     string `json:"image_name"`
+	Status        string `json:"status"`
+}
 
 func Health() (bool, error) {
 	// make sure docker can be run
 	return false, errors.New("TODO")
+}
+
+func GetStatuses(configEntries []config.ConfigEntry) ([]DockerStatus, error) {
+	statuses := make([]DockerStatus, len(configEntries))
+	for _, entry := range configEntries {
+		status, err := GetStatus(entry)
+		if err != nil {
+			return nil, err
+		}
+		statuses = append(statuses, status)
+	}
+	return statuses, nil
+}
+
+func GetStatus(configEntry config.ConfigEntry) (DockerStatus, error) {
+	return DockerStatus{
+		ContainerName: configEntry.ContainerName,
+		ImageName:     configEntry.ImageName,
+		Status:        "TODO",
+	}, nil
 }
 
 func StartContainer() error {
