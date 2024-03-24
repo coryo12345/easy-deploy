@@ -1,7 +1,9 @@
 package docker
 
 import (
+	"bytes"
 	"errors"
+	"os/exec"
 
 	"github.com/coryo12345/easy-deploy/internal/config"
 )
@@ -13,8 +15,17 @@ type DockerStatus struct {
 }
 
 func Health() (bool, error) {
-	// make sure docker can be run
-	return false, errors.New("TODO")
+	cmd := exec.Command("docker", "ps")
+	var out bytes.Buffer
+	var err bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &err
+	cmd.Run()
+	if out.String() != "" && err.String() == "" {
+		return true, nil
+	} else {
+		return false, errors.New(err.String())
+	}
 }
 
 func GetStatuses(configEntries []config.ConfigEntry) ([]DockerStatus, error) {
@@ -38,17 +49,21 @@ func GetStatus(configEntry config.ConfigEntry) (DockerStatus, error) {
 }
 
 func StartContainer() error {
+	// docker run ...
 	return nil
 }
 
 func BuildImage() error {
+	// docker build ...
 	return nil
 }
 
 func DeleteContainer() error {
+	// docker rm ...
 	return nil
 }
 
 func StopContainer() error {
+	// docker stop ...
 	return nil
 }
