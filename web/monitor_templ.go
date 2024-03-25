@@ -109,7 +109,7 @@ func MonitorPage(items []docker.ConfigStatus) templ.Component {
 			templ_7745c5c3_Err = components.Card(components.CardProps{
 				Title: "EasyDeploy",
 			}, templ.Attributes{
-				"class": "!w-full mb-2",
+				"class": "!min-w-0 !w-full mb-2",
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

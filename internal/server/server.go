@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/coryo12345/easy-deploy/internal/auth"
 	"github.com/coryo12345/easy-deploy/internal/config"
+	"github.com/coryo12345/easy-deploy/internal/docker"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,9 +18,10 @@ type echoServer struct {
 	configRepo config.ConfigRepository
 	authRepo   auth.AuthRepository
 	jwtBuilder auth.JwtBuilder
+	dockerRepo docker.DockerRepository
 }
 
-func New(configRepo config.ConfigRepository, authRepo auth.AuthRepository, jwtBuilder auth.JwtBuilder) Server {
+func New(configRepo config.ConfigRepository, authRepo auth.AuthRepository, jwtBuilder auth.JwtBuilder, dockerRepo docker.DockerRepository) Server {
 	e := echo.New()
 
 	return &echoServer{
@@ -27,6 +29,7 @@ func New(configRepo config.ConfigRepository, authRepo auth.AuthRepository, jwtBu
 		configRepo: configRepo,
 		authRepo:   authRepo,
 		jwtBuilder: jwtBuilder,
+		dockerRepo: dockerRepo,
 	}
 }
 

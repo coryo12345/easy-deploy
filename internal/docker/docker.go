@@ -10,6 +10,28 @@ import (
 	"github.com/coryo12345/easy-deploy/internal/config"
 )
 
+type DockerRepository interface {
+	Health() (bool, error)
+	GetStatuses(configEntries []config.ConfigEntry) ([]ConfigStatus, error)
+	GetStatus(configEntry config.ConfigEntry) (DockerStatus, error)
+	CloneRepo(config config.ConfigEntry) error
+	BuildImage(config config.ConfigEntry) error
+	StopContainer(config config.ConfigEntry) error
+	DeleteContainer(config config.ConfigEntry) error
+	StartContainer(config config.ConfigEntry) error
+	CleanWorkDir(config config.ConfigEntry) error
+}
+
+type dockerRepo struct {
+	workDir string
+}
+
+func New(workDir string) DockerRepository {
+	return &dockerRepo{
+		workDir: workDir,
+	}
+}
+
 type ConfigStatus struct {
 	Config config.ConfigEntry
 	Status DockerStatus
@@ -33,7 +55,7 @@ type DockerStatus struct {
 	Status       string
 }
 
-func Health() (bool, error) {
+func (d dockerRepo) Health() (bool, error) {
 	cmd := exec.Command("docker", "ps")
 	var out bytes.Buffer
 	var err bytes.Buffer
@@ -47,10 +69,10 @@ func Health() (bool, error) {
 	}
 }
 
-func GetStatuses(configEntries []config.ConfigEntry) ([]ConfigStatus, error) {
+func (d dockerRepo) GetStatuses(configEntries []config.ConfigEntry) ([]ConfigStatus, error) {
 	statuses := make([]ConfigStatus, len(configEntries))
 	for i, entry := range configEntries {
-		status, err := GetStatus(entry)
+		status, err := d.GetStatus(entry)
 		if err != nil {
 			statuses[i] = ConfigStatus{
 				Config: entry,
@@ -68,7 +90,7 @@ func GetStatuses(configEntries []config.ConfigEntry) ([]ConfigStatus, error) {
 	return statuses, nil
 }
 
-func GetStatus(configEntry config.ConfigEntry) (DockerStatus, error) {
+func (d dockerRepo) GetStatus(configEntry config.ConfigEntry) (DockerStatus, error) {
 	cmd := exec.Command("docker", "ps", "--format={{json .}}", "-f", fmt.Sprintf("name=%s", configEntry.ContainerName))
 	out, err := cmd.Output()
 	if err != nil {
@@ -84,30 +106,30 @@ func GetStatus(configEntry config.ConfigEntry) (DockerStatus, error) {
 
 }
 
-func CloneRepo(workdir string, repo string) error {
+func (d dockerRepo) CloneRepo(config config.ConfigEntry) error {
 	return nil
 }
 
-func BuildImage(workdir string, config config.ConfigEntry) error {
+func (d dockerRepo) BuildImage(config config.ConfigEntry) error {
 	// docker build ...
 	return nil
 }
 
-func StopContainer(config config.ConfigEntry) error {
+func (d dockerRepo) StopContainer(config config.ConfigEntry) error {
 	// docker stop ...
 	return nil
 }
 
-func DeleteContainer(config config.ConfigEntry) error {
+func (d dockerRepo) DeleteContainer(config config.ConfigEntry) error {
 	// docker rm ...
 	return nil
 }
 
-func StartContainer(config config.ConfigEntry) error {
+func (d dockerRepo) StartContainer(config config.ConfigEntry) error {
 	// docker run ...
 	return nil
 }
 
-func CleanWorkDir(workdir string, config config.ConfigEntry) error {
+func (d dockerRepo) CleanWorkDir(config config.ConfigEntry) error {
 	return nil
 }

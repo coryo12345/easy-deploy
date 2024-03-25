@@ -21,7 +21,7 @@ templ MonitorPage(items []docker.ConfigStatus) {
 			@components.Card(components.CardProps{
 				Title: "EasyDeploy",
 			}, templ.Attributes{
-				"class": "!w-full mb-2",
+				"class": "!min-w-0 !w-full mb-2",
 			}) {
 				<form hx-post="/monitor/refresh" hx-swap="innerHTML" hx-target="#monitor-items">
 					@components.Button(templ.Attributes{

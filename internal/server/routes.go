@@ -4,20 +4,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/a-h/templ"
-	"github.com/coryo12345/easy-deploy/internal/docker"
 	"github.com/coryo12345/easy-deploy/web"
-	"github.com/coryo12345/easy-deploy/web/components"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-
-func adaptor(component templ.Component) func(c echo.Context) error {
-	return func(c echo.Context) error {
-		c.Response().Header().Set("content-type", "text/html; charset=utf-8")
-		return component.Render(c.Request().Context(), c.Response().Writer)
-	}
-}
 
 func (s *echoServer) RegisterServerRoutes() {
 	s.Use(middleware.StaticWithConfig(middleware.StaticConfig{
@@ -56,8 +46,7 @@ func (s *echoServer) LoginHandler(c echo.Context) error {
 		c.Response().Header().Set("HX-Redirect", "/monitor")
 		return nil
 	} else {
-		c.Response().Header().Set("HX-Retarget", "#global-error")
-		return adaptor(components.ErrorMessage("Unable to authenticate. Check you have the correct password."))(c)
+		return errorMessage(c, "Unable to authenticate. Check you have the correct password.")
 	}
 }
 
@@ -75,7 +64,7 @@ func (s *echoServer) LogoutHandler(c echo.Context) error {
 }
 
 func (s *echoServer) MonitorPageHandler(c echo.Context) error {
-	statuses, err := docker.GetStatuses(s.configRepo.GetAllServices())
+	statuses, err := s.dockerRepo.GetStatuses(s.configRepo.GetAllServices())
 	if err != nil {
 		return adaptor(web.ErrorPage("Something went wrong..."))(c)
 	}
@@ -85,24 +74,46 @@ func (s *echoServer) MonitorPageHandler(c echo.Context) error {
 func (s *echoServer) RefreshConfig(c echo.Context) error {
 	err := s.configRepo.Refresh()
 	if err != nil {
-		c.Response().Header().Set("HX-Retarget", "#global-error")
-		return adaptor(components.ErrorMessage("Something went wrong, and we were unable to refresh the config file. You may need to restart your instance of easydeploy or verify the config file is correct."))(c)
+		return errorMessage(c, "Something went wrong, and we were unable to refresh the config file. You may need to restart your instance of easydeploy or verify the config file is correct.")
 	}
-	statuses, err := docker.GetStatuses(s.configRepo.GetAllServices())
+	statuses, err := s.dockerRepo.GetStatuses(s.configRepo.GetAllServices())
 	if err != nil {
-		c.Response().Header().Set("HX-Retarget", "#global-error")
-		return adaptor(components.ErrorMessage("Something went wrong, and we were unable to reload the current services. You may need to restart your instance of easydeploy or verify the config file is correct."))(c)
+		return errorMessage(c, "Something went wrong, and we were unable to reload the current services. You may need to restart your instance of easydeploy or verify the config file is correct.")
 	}
 
 	return adaptor(web.MonitorItems(statuses))(c)
 }
 
 func (s *echoServer) DeployContainerHandler(c echo.Context) error {
-	// id := c.Param("id")
-	// docker.CloneRepo()
-	// docker.BuildImage()
-	// docker.StopContainer()
-	// docker.DeleteContainer()
-	// docker.StartContainer()
+	id := c.Param("id")
+	config, err := s.configRepo.FindEntryById(id)
+	if err != nil {
+		return errorMessage(c, "Unable to load config for this service.")
+	}
+
+	err = s.dockerRepo.CloneRepo(config)
+	if err != nil {
+		return errorMessage(c, "Unable to clone repository for this service")
+	}
+
+	err = s.dockerRepo.BuildImage(config)
+	if err != nil {
+		return errorMessage(c, "Unable to build image for this service")
+	}
+
+	err = s.dockerRepo.StopContainer(config)
+	if err != nil {
+		return errorMessage(c, "Unable to stop previous container for this service")
+	}
+
+	err = s.dockerRepo.DeleteContainer(config)
+	if err != nil {
+		return errorMessage(c, "Unable to delete previous container for this service")
+	}
+
+	err = s.dockerRepo.StartContainer(config)
+	if err != nil {
+		return errorMessage(c, "Unable to start container for this service")
+	}
 	return nil
 }
