@@ -34,7 +34,6 @@ func (s *echoServer) RegisterServerRoutes() {
 	authGroup.GET("", s.MonitorPageHandler)
 	authGroup.GET("/", s.MonitorPageHandler)
 	authGroup.POST("/deploy/:id", s.DeployContainerHandler)
-
 }
 
 func (s *echoServer) LoginHandler(c echo.Context) error {

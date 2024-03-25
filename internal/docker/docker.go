@@ -10,6 +10,12 @@ import (
 	"github.com/coryo12345/easy-deploy/internal/config"
 )
 
+type ConfigStatus struct {
+	Config config.ConfigEntry
+	Status DockerStatus
+	Error  error
+}
+
 type DockerStatus struct {
 	Command      string
 	CreatedAt    string
@@ -41,18 +47,23 @@ func Health() (bool, error) {
 	}
 }
 
-func GetStatuses(configEntries []config.ConfigEntry) ([]DockerStatus, error) {
-	statuses := make([]DockerStatus, len(configEntries))
+func GetStatuses(configEntries []config.ConfigEntry) ([]ConfigStatus, error) {
+	statuses := make([]ConfigStatus, len(configEntries))
 	for i, entry := range configEntries {
 		status, err := GetStatus(entry)
-		// TODO - we don't actually want to return the error here.
-		// we might not be able to get the status if the container doesn't exist yet
-		// we still want to show the rest to the user, but need to show that THIS container can't be shown
-		// b/c we still need to give the option to manually deploy
 		if err != nil {
-			return nil, err
+			statuses[i] = ConfigStatus{
+				Config: entry,
+				Status: DockerStatus{},
+				Error:  err,
+			}
+		} else {
+			statuses[i] = ConfigStatus{
+				Config: entry,
+				Status: status,
+				Error:  nil,
+			}
 		}
-		statuses[i] = status
 	}
 	return statuses, nil
 }

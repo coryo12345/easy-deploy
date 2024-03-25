@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-templ MonitorPage(items []docker.DockerStatus) {
+templ MonitorPage(items []docker.ConfigStatus) {
 	@Base() {
 		<header class="border-b w-screen h-12 px-2 fixed top-0 left-0 shadow bg-white flex items-center justify-between">
 			<h1 class="text-lg font-semibold"><a href="/monitor">EasyDeploy</a></h1>
@@ -23,8 +23,8 @@ templ MonitorPage(items []docker.DockerStatus) {
 	}
 }
 
-templ MonitorItems(items []docker.DockerStatus) {
-	<ul role="list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+templ MonitorItems(items []docker.ConfigStatus) {
+	<ul role="list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
 		for _, item := range items {
 			<li>
 				@MonitorItem(item)
@@ -33,31 +33,39 @@ templ MonitorItems(items []docker.DockerStatus) {
 	</ul>
 }
 
-templ MonitorItem(item docker.DockerStatus) {
+templ MonitorItem(item docker.ConfigStatus) {
 	@components.Card(components.CardProps{
-		Title:       item.Names,
-		Description: fmt.Sprintf("Using image %s", item.Image),
+		Title:       item.Config.Id,
+		Description: fmt.Sprintf("Container name: %s", item.Config.ContainerName),
 	}, templ.Attributes{
 		"class": "!min-w-[100%]",
 	}) {
-		<dl>
-			<dt class="font-semibold">State</dt>
-			<dd class="ml-2 mb-1">{ item.State }</dd>
-			<dt class="font-semibold">Status</dt>
-			<dd class="ml-2 mb-1">{ item.Status }</dd>
-			<dt class="font-semibold">Created At</dt>
-			<dd class="ml-2 mb-1">{ item.CreatedAt }</dd>
-			<dt class="font-semibold">Ports</dt>
-			<dd class="ml-2 mb-1">{ item.Ports }</dd>
-			<dt class="font-semibold">Size</dt>
-			<dd class="ml-2 mb-1">{ item.Size }</dd>
-		</dl>
+		if item.Error != nil {
+			@components.ErrorMessage("This container could not be found. Perhaps it hasn't been deployed?")
+		} else {
+			<dl>
+				<dt class="font-semibold">Image</dt>
+				<dd class="ml-2 mb-1">{ item.Status.Image }</dd>
+				<dt class="font-semibold">State</dt>
+				<dd class="ml-2 mb-1">{ item.Status.State }</dd>
+				<dt class="font-semibold">Status</dt>
+				<dd class="ml-2 mb-1">{ item.Status.Status }</dd>
+				<dt class="font-semibold">Created At</dt>
+				<dd class="ml-2 mb-1">{ item.Status.CreatedAt }</dd>
+				<dt class="font-semibold">Ports</dt>
+				<dd class="ml-2 mb-1">{ item.Status.Ports }</dd>
+				<dt class="font-semibold">Size</dt>
+				<dd class="ml-2 mb-1">{ item.Status.Size }</dd>
+			</dl>
+		}
 		<div class="mt-2">
-			@components.Button(templ.Attributes{
-				"class": "bg-gray-200",
-			}) {
-				Redeploy
-			}
+			<form hx-post={ fmt.Sprintf("/monitor/deploy/%s", item.Config.Id) } hx-swap="none">
+				@components.Button(templ.Attributes{
+					"class": "bg-gray-200",
+				}) {
+					Redeploy
+				}
+			</form>
 		</div>
 	}
 }
