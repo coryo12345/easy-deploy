@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -32,7 +33,7 @@ func (s *echoServer) RegisterServerRoutes() {
 	authGroup.Use(s.RequireAuth)
 	authGroup.GET("", s.MonitorPageHandler)
 	authGroup.GET("/", s.MonitorPageHandler)
-	authGroup.POST("/deploy", s.DeployContainerHandler)
+	authGroup.POST("/deploy/:id", s.DeployContainerHandler)
 
 }
 
@@ -84,6 +85,8 @@ func (s *echoServer) MonitorPageHandler(c echo.Context) error {
 
 func (s *echoServer) DeployContainerHandler(c echo.Context) error {
 	// get the project id
+	id := c.Param("id")
+	fmt.Println(id)
 	// docker.CloneRepo("TODO")
 	// docker.BuildImage()
 	// docker.StopContainer()

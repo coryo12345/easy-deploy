@@ -24,7 +24,7 @@ templ MonitorPage(items []docker.DockerStatus) {
 }
 
 templ MonitorItems(items []docker.DockerStatus) {
-	<ul role="list">
+	<ul role="list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
 		for _, item := range items {
 			<li>
 				@MonitorItem(item)
@@ -40,8 +40,24 @@ templ MonitorItem(item docker.DockerStatus) {
 	}, templ.Attributes{
 		"class": "!min-w-[100%]",
 	}) {
-		<p>{ item.Names }</p>
-		<p>{ item.Image }</p>
-		<p>{ item.Status }</p>
+		<dl>
+			<dt class="font-semibold">State</dt>
+			<dd class="ml-2 mb-1">{ item.State }</dd>
+			<dt class="font-semibold">Status</dt>
+			<dd class="ml-2 mb-1">{ item.Status }</dd>
+			<dt class="font-semibold">Created At</dt>
+			<dd class="ml-2 mb-1">{ item.CreatedAt }</dd>
+			<dt class="font-semibold">Ports</dt>
+			<dd class="ml-2 mb-1">{ item.Ports }</dd>
+			<dt class="font-semibold">Size</dt>
+			<dd class="ml-2 mb-1">{ item.Size }</dd>
+		</dl>
+		<div class="mt-2">
+			@components.Button(templ.Attributes{
+				"class": "bg-gray-200",
+			}) {
+				Redeploy
+			}
+		</div>
 	}
 }
