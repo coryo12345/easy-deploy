@@ -18,7 +18,23 @@ templ MonitorPage(items []docker.ConfigStatus) {
 			}
 		</header>
 		<main class="text-center mt-12 pt-4 px-8">
-			@MonitorItems(items)
+			@components.Card(components.CardProps{
+				Title: "EasyDeploy",
+			}, templ.Attributes{
+				"class": "!w-full mb-2",
+			}) {
+				<form hx-post="/monitor/refresh" hx-swap="innerHTML" hx-target="#monitor-items">
+					@components.Button(templ.Attributes{
+						"class": "bg-gray-200",
+						"type":  "submit",
+					}) {
+						Refresh Config
+					}
+				</form>
+			}
+			<div id="monitor-items">
+				@MonitorItems(items)
+			</div>
 		</main>
 	}
 }
@@ -62,6 +78,7 @@ templ MonitorItem(item docker.ConfigStatus) {
 			<form hx-post={ fmt.Sprintf("/monitor/deploy/%s", item.Config.Id) } hx-swap="none">
 				@components.Button(templ.Attributes{
 					"class": "bg-gray-200",
+					"type":  "submit",
 				}) {
 					Redeploy
 				}

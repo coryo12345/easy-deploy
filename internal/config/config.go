@@ -10,14 +10,33 @@ import (
 type ConfigRepository interface {
 	GetAllServices() []ConfigEntry
 	FindEntryById(id string) (ConfigEntry, error)
+	Refresh() error
 }
 
 type ConfigData struct {
-	Init     string        `json:"init"`
-	Services []ConfigEntry `json:"services"`
+	configFile string
+	Init       string        `json:"init"`
+	Services   []ConfigEntry `json:"services"`
 }
 
 func New(configFile string) (ConfigRepository, error) {
+	data, err := readDataFromFile(configFile)
+	if err != nil {
+		return nil, err
+	}
+
+	var configData ConfigData
+	err = json.Unmarshal(data, &configData)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse file %s, it may not be valid JSON", configFile)
+	}
+
+	configData.configFile = configFile
+
+	return &configData, nil
+}
+
+func readDataFromFile(configFile string) ([]byte, error) {
 	// open config file
 	file, err := os.Open(configFile)
 	if err != nil {
@@ -30,13 +49,7 @@ func New(configFile string) (ConfigRepository, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to read file %s", configFile)
 	}
-	var configData ConfigData
-	err = json.Unmarshal(data, &configData)
-	if err != nil {
-		return nil, fmt.Errorf("unable to parse file %s, it may not be valid JSON", configFile)
-	}
-
-	return configData, nil
+	return data, nil
 }
 
 func (c ConfigData) GetAllServices() []ConfigEntry {
@@ -50,4 +63,22 @@ func (c ConfigData) FindEntryById(id string) (ConfigEntry, error) {
 		}
 	}
 	return ConfigEntry{}, fmt.Errorf("no entry with id %s found", id)
+}
+
+func (c *ConfigData) Refresh() error {
+	data, err := readDataFromFile(c.configFile)
+	if err != nil {
+		return err
+	}
+
+	var newConfig ConfigData
+	err = json.Unmarshal(data, &newConfig)
+	if err != nil {
+		return err
+	}
+
+	c.Init = newConfig.Init
+	c.Services = newConfig.Services
+
+	return nil
 }

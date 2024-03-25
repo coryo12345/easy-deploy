@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -34,6 +33,7 @@ func (s *echoServer) RegisterServerRoutes() {
 	authGroup.GET("", s.MonitorPageHandler)
 	authGroup.GET("/", s.MonitorPageHandler)
 	authGroup.POST("/deploy/:id", s.DeployContainerHandler)
+	authGroup.POST("/refresh", s.RefreshConfig)
 }
 
 func (s *echoServer) LoginHandler(c echo.Context) error {
@@ -82,11 +82,24 @@ func (s *echoServer) MonitorPageHandler(c echo.Context) error {
 	return adaptor(web.MonitorPage(statuses))(c)
 }
 
+func (s *echoServer) RefreshConfig(c echo.Context) error {
+	err := s.configRepo.Refresh()
+	if err != nil {
+		c.Response().Header().Set("HX-Retarget", "#global-error")
+		return adaptor(components.ErrorMessage("Something went wrong, and we were unable to refresh the config file. You may need to restart your instance of easydeploy or verify the config file is correct."))(c)
+	}
+	statuses, err := docker.GetStatuses(s.configRepo.GetAllServices())
+	if err != nil {
+		c.Response().Header().Set("HX-Retarget", "#global-error")
+		return adaptor(components.ErrorMessage("Something went wrong, and we were unable to reload the current services. You may need to restart your instance of easydeploy or verify the config file is correct."))(c)
+	}
+
+	return adaptor(web.MonitorItems(statuses))(c)
+}
+
 func (s *echoServer) DeployContainerHandler(c echo.Context) error {
-	// get the project id
-	id := c.Param("id")
-	fmt.Println(id)
-	// docker.CloneRepo("TODO")
+	// id := c.Param("id")
+	// docker.CloneRepo()
 	// docker.BuildImage()
 	// docker.StopContainer()
 	// docker.DeleteContainer()
