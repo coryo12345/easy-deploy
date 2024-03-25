@@ -45,6 +45,10 @@ func GetStatuses(configEntries []config.ConfigEntry) ([]DockerStatus, error) {
 	statuses := make([]DockerStatus, len(configEntries))
 	for i, entry := range configEntries {
 		status, err := GetStatus(entry)
+		// TODO - we don't actually want to return the error here.
+		// we might not be able to get the status if the container doesn't exist yet
+		// we still want to show the rest to the user, but need to show that THIS container can't be shown
+		// b/c we still need to give the option to manually deploy
 		if err != nil {
 			return nil, err
 		}
@@ -69,22 +73,30 @@ func GetStatus(configEntry config.ConfigEntry) (DockerStatus, error) {
 
 }
 
-func StartContainer() error {
-	// docker run ...
+func CloneRepo(workdir string, repo string) error {
 	return nil
 }
 
-func BuildImage() error {
+func BuildImage(workdir string, config config.ConfigEntry) error {
 	// docker build ...
 	return nil
 }
 
-func DeleteContainer() error {
+func StopContainer(config config.ConfigEntry) error {
+	// docker stop ...
+	return nil
+}
+
+func DeleteContainer(config config.ConfigEntry) error {
 	// docker rm ...
 	return nil
 }
 
-func StopContainer() error {
-	// docker stop ...
+func StartContainer(config config.ConfigEntry) error {
+	// docker run ...
+	return nil
+}
+
+func CleanWorkDir(workdir string, config config.ConfigEntry) error {
 	return nil
 }

@@ -33,3 +33,5 @@ web/static/alpine.cdn.min.js
 web/static/htmx.min.js
 
 .DS_Store
+
+config.json

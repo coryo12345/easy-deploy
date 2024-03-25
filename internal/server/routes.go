@@ -32,6 +32,7 @@ func (s *echoServer) RegisterServerRoutes() {
 	authGroup.Use(s.RequireAuth)
 	authGroup.GET("", s.MonitorPageHandler)
 	authGroup.GET("/", s.MonitorPageHandler)
+	authGroup.POST("/deploy", s.DeployContainerHandler)
 
 }
 
@@ -79,4 +80,14 @@ func (s *echoServer) MonitorPageHandler(c echo.Context) error {
 		return adaptor(web.ErrorPage("Something went wrong..."))(c)
 	}
 	return adaptor(web.MonitorPage(statuses))(c)
+}
+
+func (s *echoServer) DeployContainerHandler(c echo.Context) error {
+	// get the project id
+	// docker.CloneRepo("TODO")
+	// docker.BuildImage()
+	// docker.StopContainer()
+	// docker.DeleteContainer()
+	// docker.StartContainer()
+	return nil
 }

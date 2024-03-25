@@ -7,7 +7,10 @@
             "container_name": "canvas",
             "container_options": "-p 8080:8080 --network mynetwork",
             "image_name": "mysite:latest",
-            "dockerfile_path": "./dockerfile"
+            "dockerfile_path": "./dockerfile",
+            "env": {
+                "key": "value"
+            }
         }
     ]
 }

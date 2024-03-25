@@ -12,10 +12,6 @@ type ConfigRepository interface {
 	FindEntryById(id string) (ConfigEntry, error)
 }
 
-type configRepo struct {
-	data ConfigData
-}
-
 type ConfigData struct {
 	Init     string        `json:"init"`
 	Services []ConfigEntry `json:"services"`
@@ -40,19 +36,15 @@ func New(configFile string) (ConfigRepository, error) {
 		return nil, fmt.Errorf("unable to parse file %s, it may not be valid JSON", configFile)
 	}
 
-	c := configRepo{
-		data: configData,
-	}
-
-	return c, nil
+	return configData, nil
 }
 
-func (c configRepo) GetAllServices() []ConfigEntry {
-	return c.data.Services
+func (c ConfigData) GetAllServices() []ConfigEntry {
+	return c.Services
 }
 
-func (c configRepo) FindEntryById(id string) (ConfigEntry, error) {
-	for _, entry := range c.data.Services {
+func (c ConfigData) FindEntryById(id string) (ConfigEntry, error) {
+	for _, entry := range c.Services {
 		if entry.Id == id {
 			return entry, nil
 		}
