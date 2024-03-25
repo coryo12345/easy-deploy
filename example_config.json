@@ -4,7 +4,7 @@
         {
             "id": "my-website",
             "repo": "https://github.com/coryo12345/easy-deploy",
-            "container_name": "mywebsite",
+            "container_name": "canvas",
             "container_options": "-p 8080:8080 --network mynetwork",
             "image_name": "mysite:latest",
             "dockerfile_path": "./dockerfile"

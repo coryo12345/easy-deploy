@@ -2,16 +2,29 @@ package docker
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"os/exec"
 
 	"github.com/coryo12345/easy-deploy/internal/config"
 )
 
 type DockerStatus struct {
-	ContainerName string `json:"container_name"`
-	ImageName     string `json:"image_name"`
-	Status        string `json:"status"`
+	Command      string
+	CreatedAt    string
+	ID           string
+	Image        string
+	Labels       string
+	LocalVolumes string
+	Mounts       string
+	Names        string
+	Networks     string
+	Ports        string
+	RunningFor   string
+	Size         string
+	State        string
+	Status       string
 }
 
 func Health() (bool, error) {
@@ -41,11 +54,19 @@ func GetStatuses(configEntries []config.ConfigEntry) ([]DockerStatus, error) {
 }
 
 func GetStatus(configEntry config.ConfigEntry) (DockerStatus, error) {
-	return DockerStatus{
-		ContainerName: configEntry.ContainerName,
-		ImageName:     configEntry.ImageName,
-		Status:        "TODO",
-	}, nil
+	cmd := exec.Command("docker", "ps", "--format={{json .}}", "-f", fmt.Sprintf("name=%s", configEntry.ContainerName))
+	out, err := cmd.Output()
+	if err != nil {
+		return DockerStatus{}, err
+	}
+
+	status := DockerStatus{}
+	err = json.Unmarshal(out, &status)
+	if err != nil {
+		return DockerStatus{}, err
+	}
+	return status, nil
+
 }
 
 func StartContainer() error {

@@ -35,13 +35,13 @@ templ MonitorItems(items []docker.DockerStatus) {
 
 templ MonitorItem(item docker.DockerStatus) {
 	@components.Card(components.CardProps{
-		Title:       item.ContainerName,
-		Description: fmt.Sprintf("Using image %s", item.ImageName),
+		Title:       item.Names,
+		Description: fmt.Sprintf("Using image %s", item.Image),
 	}, templ.Attributes{
 		"class": "!min-w-[100%]",
 	}) {
-		<p>{ item.ContainerName }</p>
-		<p>{ item.ImageName }</p>
+		<p>{ item.Names }</p>
+		<p>{ item.Image }</p>
 		<p>{ item.Status }</p>
 	}
 }
