@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"slices"
 	"strconv"
 
@@ -37,7 +38,9 @@ func main() {
 	jwtBuilder := auth.NewJwtBuilder(envVars.env)
 	dockerRepo := docker.New(envVars.workDir)
 
-	// TODO need to run init command from config
+	// run init command from config
+	cmdStr := configRepo.InitCmd()
+	runInitCommand(cmdStr)
 
 	// start server
 	webServer := server.New(configRepo, authRepo, jwtBuilder, dockerRepo)
@@ -86,4 +89,19 @@ func readEnvVars() environmentVariables {
 		webPassword: password,
 		workDir:     workDir,
 	}
+}
+
+func runInitCommand(cmdStr string) {
+	if len(cmdStr) == 0 {
+		log.Println("No init command present, skipping...")
+		return
+	}
+
+	cmd := exec.Command("bash", "-c", cmdStr)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Panicf("Running init command failed: %s", err.Error())
+	}
+	log.Println("Running Init Command")
+	log.Println(string(out))
 }

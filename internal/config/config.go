@@ -11,6 +11,7 @@ type ConfigRepository interface {
 	GetAllServices() []ConfigEntry
 	FindEntryById(id string) (ConfigEntry, error)
 	Refresh() error
+	InitCmd() string
 }
 
 type ConfigData struct {
@@ -81,4 +82,8 @@ func (c *ConfigData) Refresh() error {
 	c.Services = newConfig.Services
 
 	return nil
+}
+
+func (c ConfigData) InitCmd() string {
+	return c.Init
 }

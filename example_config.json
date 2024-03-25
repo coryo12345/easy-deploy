@@ -1,5 +1,5 @@
 {
-    "init": "docker network create mynetwork",
+    "init": ["docker network create mynetwork"],
     "services": [
         {
             "id": "my-website",
