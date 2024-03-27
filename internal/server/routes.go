@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/coryo12345/easy-deploy/web"
+	"github.com/coryo12345/easy-deploy/web/components"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -97,41 +98,46 @@ func (s *echoServer) DeployContainerHandler(c echo.Context) error {
 
 	defer s.dockerRepo.CleanWorkDir(config)
 
+	errResponse := func(msg string) error {
+		log.Println(err.Error())
+		status, err2 := s.dockerRepo.GetStatus(config)
+		if err2 != nil {
+			log.Println(err2.Error())
+			return adaptor(components.GlobalError("Unable to retrieve status after failure.\n" + msg))(c)
+		}
+		l := logs.String()
+		return contentWithError(c, web.MonitorItem(status, &l), msg)
+	}
+
 	err = s.dockerRepo.CloneRepo(config, &logs)
 	if err != nil {
-		log.Println(err.Error())
-		l := logs.String()
-		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to clone repository for this service")
+		return errResponse("Unable to clone repository for this service")
 	}
 
 	err = s.dockerRepo.BuildImage(config, &logs)
 	if err != nil {
-		log.Println(err.Error())
-		l := logs.String()
-		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to build image for this service")
+		return errResponse("Unable to build image for this service")
 	}
 
 	err = s.dockerRepo.StopContainer(config, &logs)
 	if err != nil {
-		log.Println(err.Error())
-		l := logs.String()
-		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to stop previous container for this service")
+		return errResponse("Unable to stop previous container for this service")
 	}
 
 	err = s.dockerRepo.DeleteContainer(config, &logs)
 	if err != nil {
-		log.Println(err.Error())
-		l := logs.String()
-		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to delete previous container for this service")
+		return errResponse("Unable to delete previous container for this service")
 	}
 
 	err = s.dockerRepo.StartContainer(config, &logs)
 	if err != nil {
-		log.Println(err.Error())
-		l := logs.String()
-		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to start container for this service")
+		return errResponse("Unable to start container for this service")
 	}
 
+	status, err := s.dockerRepo.GetStatus(config)
+	if err != nil {
+		return adaptor(components.GlobalError("Unable to retrieve status after deployment"))(c)
+	}
 	l := logs.String()
-	return adaptor(web.ItemDeploySection(config.Id, &l))(c)
+	return adaptor(web.MonitorItem(status, &l))(c)
 }

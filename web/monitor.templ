@@ -43,14 +43,14 @@ templ MonitorItems(items []docker.ConfigStatus) {
 	<ul role="list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
 		for _, item := range items {
 			<li>
-				@MonitorItem(item)
+				@MonitorItem(item, nil)
 			</li>
 		}
 	</ul>
 }
 
-// TODO wrap this in a form so this can be reloaded after deploy is clicked
-templ MonitorItem(item docker.ConfigStatus) {
+templ MonitorItem(item docker.ConfigStatus, logs *string) {
+	<form hx-post={ fmt.Sprintf("/monitor/deploy/%s", item.Config.Id) } x-data="{loading: false}" @submit="loading = true">
 	@components.Card(components.CardProps{
 		Title:       item.Config.Id,
 		Description: fmt.Sprintf("Container name: %s", item.Config.ContainerName),
@@ -76,14 +76,7 @@ templ MonitorItem(item docker.ConfigStatus) {
 			</dl>
 		}
 		<div class="mt-2">
-			@ItemDeploySection(item.Config.Id, nil)
-		</div>
-	}
-}
-
-templ ItemDeploySection(id string, logs *string) {
-	<form hx-post={ fmt.Sprintf("/monitor/deploy/%s", id) } x-data="{loading: false}" @submit="loading = true">
-		if logs != nil {
+			if logs != nil {
 			<section x-data="{open: false}" class="p-2 mb-2 border rounded shadow">
 				<span role="button" class="block w-full h-full" @click="open = !open">
 					<span class="flex justify-between">
@@ -101,5 +94,7 @@ templ ItemDeploySection(id string, logs *string) {
 			":disabled": "loading",
 			"x-text":    "loading ? 'Loading...' : 'Redeploy'",
 		})
+		</div>
+	}
 	</form>
 }

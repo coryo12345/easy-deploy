@@ -22,7 +22,7 @@ const (
 type DockerRepository interface {
 	Health() (bool, error)
 	GetStatuses(configEntries []config.ConfigEntry) ([]ConfigStatus, error)
-	GetStatus(configEntry config.ConfigEntry) (DockerStatus, error)
+	GetStatus(configEntry config.ConfigEntry) (ConfigStatus, error)
 	CloneRepo(config config.ConfigEntry, out *strings.Builder) error
 	BuildImage(config config.ConfigEntry, out *strings.Builder) error
 	StopContainer(config config.ConfigEntry, out *strings.Builder) error
@@ -89,29 +89,31 @@ func (d dockerRepo) GetStatuses(configEntries []config.ConfigEntry) ([]ConfigSta
 				Error:  err,
 			}
 		} else {
-			statuses[i] = ConfigStatus{
-				Config: entry,
-				Status: status,
-				Error:  nil,
-			}
+			statuses[i] = status
 		}
 	}
 	return statuses, nil
 }
 
-func (d dockerRepo) GetStatus(configEntry config.ConfigEntry) (DockerStatus, error) {
+func (d dockerRepo) GetStatus(configEntry config.ConfigEntry) (ConfigStatus, error) {
 	cmd := exec.Command("docker", "ps", "-a", "--format={{json .}}", "-f", fmt.Sprintf("name=%s", configEntry.ContainerName))
 	out, err := cmd.Output()
 	if err != nil {
-		return DockerStatus{}, err
+		return ConfigStatus{}, err
 	}
 
 	status := DockerStatus{}
 	err = json.Unmarshal(out, &status)
 	if err != nil {
-		return DockerStatus{}, err
+		return ConfigStatus{}, err
 	}
-	return status, nil
+
+	cs := ConfigStatus{
+		Config: configEntry,
+		Status: status,
+		Error:  nil,
+	}
+	return cs, nil
 
 }
 
