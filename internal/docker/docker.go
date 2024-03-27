@@ -182,7 +182,7 @@ func (d dockerRepo) StartContainer(config config.ConfigEntry, logs *strings.Buil
 		envStr.WriteString(fmt.Sprintf(" --env %s=%s", key, value))
 	}
 
-	cmd := exec.Command("sh", "-c", fmt.Sprintf("docker run %s --name %s %s %s", envStr.String(), config.ContainerName, config.ContainerOptions, config.ImageName))
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("docker run %s --name %s %s --detach %s", envStr.String(), config.ContainerName, config.ContainerOptions, config.ImageName))
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &out
