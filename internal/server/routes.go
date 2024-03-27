@@ -132,5 +132,6 @@ func (s *echoServer) DeployContainerHandler(c echo.Context) error {
 		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to start container for this service")
 	}
 
-	return nil
+	l := logs.String()
+	return adaptor(web.ItemDeploySection(config.Id, &l))(c)
 }
