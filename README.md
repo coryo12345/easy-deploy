@@ -14,6 +14,5 @@ Only consider using this tool if:
 You will still need to configure any reverse proxies yourself to point traffic to each container (if needed)
 
 ## TODO
-* [ ] update item visual status after deploying
-* [ ] need to make `start.sh` file that runs easy-deploy container (must mount docker socket & config file)
+* [ ] need to make `start.sh` file that runs easy-deploy in a docker container (must mount docker socket & config file)
 * [ ] research github webhooks to trigger deploys
