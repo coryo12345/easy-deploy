@@ -1,0 +1,7 @@
+package components
+
+templ Fragment(children ...templ.Component) {
+    for _, child := range children {
+        @child
+    }
+}

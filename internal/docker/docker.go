@@ -5,20 +5,29 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
+	"log"
+	"os"
 	"os/exec"
+	"path"
+	"strings"
 
 	"github.com/coryo12345/easy-deploy/internal/config"
+)
+
+const (
+	WORKDIR_SUB_NAME = "easydeploy"
 )
 
 type DockerRepository interface {
 	Health() (bool, error)
 	GetStatuses(configEntries []config.ConfigEntry) ([]ConfigStatus, error)
 	GetStatus(configEntry config.ConfigEntry) (DockerStatus, error)
-	CloneRepo(config config.ConfigEntry) error
-	BuildImage(config config.ConfigEntry) error
-	StopContainer(config config.ConfigEntry) error
-	DeleteContainer(config config.ConfigEntry) error
-	StartContainer(config config.ConfigEntry) error
+	CloneRepo(config config.ConfigEntry, out *strings.Builder) error
+	BuildImage(config config.ConfigEntry, out *strings.Builder) error
+	StopContainer(config config.ConfigEntry, out *strings.Builder) error
+	DeleteContainer(config config.ConfigEntry, out *strings.Builder) error
+	StartContainer(config config.ConfigEntry, out *strings.Builder) error
 	CleanWorkDir(config config.ConfigEntry) error
 }
 
@@ -106,30 +115,60 @@ func (d dockerRepo) GetStatus(configEntry config.ConfigEntry) (DockerStatus, err
 
 }
 
-func (d dockerRepo) CloneRepo(config config.ConfigEntry) error {
+func (d dockerRepo) CloneRepo(config config.ConfigEntry, logs *strings.Builder) error {
+	workDirPath := path.Join(d.workDir, WORKDIR_SUB_NAME, config.Id)
+	err := os.MkdirAll(workDirPath, fs.ModePerm)
+	if err != nil {
+		return err
+	}
+	cmd := exec.Command("git", "clone", config.GitRepository, workDirPath)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	err = cmd.Run()
+	logs.WriteString(out.String())
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func (d dockerRepo) BuildImage(config config.ConfigEntry) error {
-	// docker build ...
+func (d dockerRepo) BuildImage(config config.ConfigEntry, logs *strings.Builder) error {
+	workDirPath := path.Join(d.workDir, WORKDIR_SUB_NAME, config.Id)
+	dockerfilePath := path.Join(workDirPath, config.Dockerfile)
+	cmd := exec.Command("docker", "build", "-t", config.ImageName, "-f", dockerfilePath, workDirPath)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	err := cmd.Run()
+	logs.WriteString(out.String())
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func (d dockerRepo) StopContainer(config config.ConfigEntry) error {
+func (d dockerRepo) StopContainer(config config.ConfigEntry, logs *strings.Builder) error {
 	// docker stop ...
 	return nil
 }
 
-func (d dockerRepo) DeleteContainer(config config.ConfigEntry) error {
+func (d dockerRepo) DeleteContainer(config config.ConfigEntry, logs *strings.Builder) error {
 	// docker rm ...
 	return nil
 }
 
-func (d dockerRepo) StartContainer(config config.ConfigEntry) error {
+func (d dockerRepo) StartContainer(config config.ConfigEntry, logs *strings.Builder) error {
 	// docker run ...
 	return nil
 }
 
 func (d dockerRepo) CleanWorkDir(config config.ConfigEntry) error {
+	workDirPath := path.Join(d.workDir, WORKDIR_SUB_NAME, config.Id)
+	err := os.RemoveAll(workDirPath)
+	if err != nil {
+		log.Printf("ERROR CLEANING WORKDIR FOR %s\n", config.Id)
+		log.Println(err.Error())
+	}
 	return nil
 }

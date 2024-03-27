@@ -54,7 +54,7 @@ templ MonitorItem(item docker.ConfigStatus) {
 		Title:       item.Config.Id,
 		Description: fmt.Sprintf("Container name: %s", item.Config.ContainerName),
 	}, templ.Attributes{
-		"class": "!min-w-[100%]",
+		"class": "!w-[100%]",
 	}) {
 		if item.Error != nil {
 			@components.ErrorMessage("This container could not be found. Perhaps it hasn't been deployed?")
@@ -75,14 +75,30 @@ templ MonitorItem(item docker.ConfigStatus) {
 			</dl>
 		}
 		<div class="mt-2">
-			<form hx-post={ fmt.Sprintf("/monitor/deploy/%s", item.Config.Id) } hx-swap="none">
-				@components.Button(templ.Attributes{
-					"class": "bg-gray-200",
-					"type":  "submit",
-				}) {
-					Redeploy
-				}
-			</form>
+			@ItemDeploySection(item.Config.Id, nil)
 		</div>
 	}
+}
+
+templ ItemDeploySection(id string, logs *string) {
+	<form hx-post={ fmt.Sprintf("/monitor/deploy/%s", id) } x-data="{loading: false}" @submit="loading = true">
+		if logs != nil {
+			<section x-data="{open: false}" class="p-2 mb-2 border rounded shadow">
+				<span role="button" class="block w-full h-full" @click="open = !open">
+					<span class="flex justify-between">
+						<p>Show Logs</p>
+						<span x-show="!open">&#x25BC;</span>
+						<span x-show="open">&#x25B2;</span>
+					</span>
+				</span>
+				<pre x-show="open" class="overflow-scroll pb-4 mt-1 max-h-80">{ *logs }</pre>
+			</section>
+		}
+		@components.Button(templ.Attributes{
+			"class":     "bg-gray-200",
+			"type":      "submit",
+			":disabled": "loading",
+			"x-text":    "loading ? 'Loading...' : 'Redeploy'",
+		})
+	</form>
 }

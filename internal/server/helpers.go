@@ -14,6 +14,9 @@ func adaptor(component templ.Component) func(c echo.Context) error {
 }
 
 func errorMessage(c echo.Context, msg string) error {
-	c.Response().Header().Set("HX-Retarget", "#global-error")
-	return adaptor(components.ErrorMessage(msg))(c)
+	return adaptor(components.GlobalError(msg))(c)
+}
+
+func contentWithError(c echo.Context, content templ.Component, errorMsg string) error {
+	return adaptor(components.Fragment(content, components.GlobalError(errorMsg)))(c)
 }

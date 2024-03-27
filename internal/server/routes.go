@@ -1,7 +1,9 @@
 package server
 
 import (
+	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/coryo12345/easy-deploy/web"
@@ -91,29 +93,44 @@ func (s *echoServer) DeployContainerHandler(c echo.Context) error {
 		return errorMessage(c, "Unable to load config for this service.")
 	}
 
-	err = s.dockerRepo.CloneRepo(config)
+	logs := strings.Builder{}
+
+	defer s.dockerRepo.CleanWorkDir(config)
+
+	err = s.dockerRepo.CloneRepo(config, &logs)
 	if err != nil {
-		return errorMessage(c, "Unable to clone repository for this service")
+		log.Println(err.Error())
+		l := logs.String()
+		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to clone repository for this service")
 	}
 
-	err = s.dockerRepo.BuildImage(config)
+	err = s.dockerRepo.BuildImage(config, &logs)
 	if err != nil {
-		return errorMessage(c, "Unable to build image for this service")
+		log.Println(err.Error())
+		l := logs.String()
+		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to build image for this service")
 	}
 
-	err = s.dockerRepo.StopContainer(config)
+	err = s.dockerRepo.StopContainer(config, &logs)
 	if err != nil {
-		return errorMessage(c, "Unable to stop previous container for this service")
+		log.Println(err.Error())
+		l := logs.String()
+		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to stop previous container for this service")
 	}
 
-	err = s.dockerRepo.DeleteContainer(config)
+	err = s.dockerRepo.DeleteContainer(config, &logs)
 	if err != nil {
-		return errorMessage(c, "Unable to delete previous container for this service")
+		log.Println(err.Error())
+		l := logs.String()
+		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to delete previous container for this service")
 	}
 
-	err = s.dockerRepo.StartContainer(config)
+	err = s.dockerRepo.StartContainer(config, &logs)
 	if err != nil {
-		return errorMessage(c, "Unable to start container for this service")
+		log.Println(err.Error())
+		l := logs.String()
+		return contentWithError(c, web.ItemDeploySection(config.Id, &l), "Unable to start container for this service")
 	}
+
 	return nil
 }
