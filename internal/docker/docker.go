@@ -100,7 +100,7 @@ func (d dockerRepo) GetStatuses(configEntries []config.ConfigEntry) ([]ConfigSta
 }
 
 func (d dockerRepo) GetStatus(configEntry config.ConfigEntry) (DockerStatus, error) {
-	cmd := exec.Command("docker", "ps", "--format={{json .}}", "-f", fmt.Sprintf("name=%s", configEntry.ContainerName))
+	cmd := exec.Command("docker", "ps", "-a", "--format={{json .}}", "-f", fmt.Sprintf("name=%s", configEntry.ContainerName))
 	out, err := cmd.Output()
 	if err != nil {
 		return DockerStatus{}, err
@@ -149,17 +149,48 @@ func (d dockerRepo) BuildImage(config config.ConfigEntry, logs *strings.Builder)
 }
 
 func (d dockerRepo) StopContainer(config config.ConfigEntry, logs *strings.Builder) error {
-	// docker stop ...
+	cmd := exec.Command("docker", "stop", config.ContainerName)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	err := cmd.Run()
+	logs.WriteString(out.String())
+	if err != nil {
+		// going to ignore this for now - if the container doesn't exist it will error
+		log.Println(err.Error())
+	}
 	return nil
 }
 
 func (d dockerRepo) DeleteContainer(config config.ConfigEntry, logs *strings.Builder) error {
-	// docker rm ...
+	cmd := exec.Command("docker", "rm", config.ContainerName)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	err := cmd.Run()
+	logs.WriteString(out.String())
+	if err != nil {
+		// if the previous container didnt exist this would error
+		log.Println(err.Error())
+	}
 	return nil
 }
 
 func (d dockerRepo) StartContainer(config config.ConfigEntry, logs *strings.Builder) error {
-	// docker run ...
+	envStr := strings.Builder{}
+	for key, value := range config.Env {
+		envStr.WriteString(fmt.Sprintf(" --env %s=%s", key, value))
+	}
+
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("docker run %s --name %s %s %s", envStr.String(), config.ContainerName, config.ContainerOptions, config.ImageName))
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	err := cmd.Run()
+	logs.WriteString(out.String())
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

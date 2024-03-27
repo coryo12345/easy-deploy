@@ -14,12 +14,6 @@ Only consider using this tool if:
 You will still need to configure any reverse proxies yourself to point traffic to each container (if needed)
 
 ## TODO
-* [ ] generate JWT on login if password is correct & set in cookie
-* [ ] verify JWT in auth middleware
+* [ ] update item visual status after deploying
 * [ ] need to make `start.sh` file that runs easy-deploy container (must mount docker socket & config file)
-* [ ] need to run init command on startup (from config)
-* [ ] research github webhooks
-* [ ] create function to delete container
-* [ ] create function to delete image
-* [ ] create function to build new image
-* [ ] create function to start new container
+* [ ] research github webhooks to trigger deploys

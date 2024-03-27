@@ -184,6 +184,7 @@ func MonitorItems(items []docker.ConfigStatus) templ.Component {
 	})
 }
 
+// TODO wrap this in a form so this can be reloaded after deploy is clicked
 func MonitorItem(item docker.ConfigStatus) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -216,7 +217,7 @@ func MonitorItem(item docker.ConfigStatus) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(item.Status.Image)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 64, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 65, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -229,7 +230,7 @@ func MonitorItem(item docker.ConfigStatus) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(item.Status.State)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 66, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 67, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -242,7 +243,7 @@ func MonitorItem(item docker.ConfigStatus) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(item.Status.Status)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 68, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 69, Col: 46}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -255,7 +256,7 @@ func MonitorItem(item docker.ConfigStatus) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(item.Status.CreatedAt)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 70, Col: 49}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 71, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -268,7 +269,7 @@ func MonitorItem(item docker.ConfigStatus) templ.Component {
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(item.Status.Ports)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 72, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 73, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -281,7 +282,7 @@ func MonitorItem(item docker.ConfigStatus) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(item.Status.Size)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 74, Col: 44}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 75, Col: 44}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -345,7 +346,7 @@ func ItemDeploySection(id string, logs *string) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/monitor/deploy/%s", id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 84, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 85, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -363,7 +364,7 @@ func ItemDeploySection(id string, logs *string) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(*logs)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 94, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/monitor.templ`, Line: 95, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {

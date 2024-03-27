@@ -49,6 +49,7 @@ templ MonitorItems(items []docker.ConfigStatus) {
 	</ul>
 }
 
+// TODO wrap this in a form so this can be reloaded after deploy is clicked
 templ MonitorItem(item docker.ConfigStatus) {
 	@components.Card(components.CardProps{
 		Title:       item.Config.Id,
